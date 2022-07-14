@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>41</title>
+
+		<!-- CSS and javascript -->
+		<!-- <link rel="stylesheet" type="text/css" href="Lab_04.css"> -->
+        <!-- Firebase App is always required and must be first -->
+        <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-functions.js"></script>
+        <script src="config.js"></script>
+        <script src="index.js"></script>
+        <script language="javascript">
+            function checkBox(box){
+                var count=0;
+                var innerHtml = "";
+                for(var j=0;j<document.all.nums.length;j++){
+                    if(document.all.nums[j].checked==true){
+                        count++;
+                    }
+                }
+                if(count>10){
+                    box.checked=false;	
+                    return ;
+                }
+                for(var j=0;j<document.all.nums.length;j++){     
+                    if(document.all.nums[j].checked==true){
+                        innerHtml += "<input name='num"+j+"' size='2' readonly value='"+document.all.nums[j].value+"'>";
+                        innerHtml += " ";         
+                    }
+                } 
+                num_input.innerHTML = innerHtml;
+            }
+
+            function startCompare(type){
+                var term;
+                var balls;
+                var count = 0;
+
+                var snum = new Array();　//選擇球碼的數組形式
+                var snum_str = ""; //選擇球碼的字符串形式
+                var award = new Array(7);
+                var award_str = new Array(7);
+                new Promise(function (resolve, reject) { 
+                    for(var i=0;i<7;i++){     
+                    award[i]=0;
+                    award_str[i]="";
+                    }
+                    i=0;
+                    for(var j=0;j<document.all.nums.length;j++){          
+                        if(document.all.nums[j].checked==true){
+                            snum[i] = document.all.nums[j].value;
+                            snum_str+=snum[i]+",";
+                            i++;
+                        }else{
+                            continue;
+                        }	 
+                    }   
+                    if(snum.length<3){
+                        alert('最少要選擇三個球!');
+                        return ;
+                    }
+                    console.log("start firebase");
+                    firebase.database().ref().once('value', function (snapshot) {
+                        snapshot.forEach(function(item){
+                            // console.log(item.key + " ");
+                            firebase.database().ref(item.key).once('value', function (snapshot) {
+                                snapshot.forEach(function(item1){
+                                    // console.log(item1.key + " " + item1.val());
+                                    // switch(compare_to(type,tmpNums,snum)){
+                                        
+                                    // }
+
+                                    if(count == 0){
+                                        term = item.key;
+                                        balls = item1.val();
+                                        count++;
+                                        console.log("term: " + term);
+                                        console.log("balls: " + balls);
+                                    }
+                                })
+                            });
+                        })
+                    });  
+                }).then(function () {
+                    console.log("term: " + term);
+                    console.log("balls: " + balls);
+                }).catch(function (err) {
+                    console.log(err);
+                })
+            }
+
+            // function startCompare(type){
+            //     var snum = new Array();　//選擇球碼的數組形式
+            //     var snum_str = ""; //選擇球碼的字符串形式
+            //     var award = new Array(7);
+            //     var award_str = new Array(7);
+            
+            //     for(var i=0;i<7;i++){     
+            //     award[i]=0;
+            //     award_str[i]="";
+            //     }
+            //     i=0;
+            //     for(var j=0;j<document.all.nums.length;j++){          
+            //         if(document.all.nums[j].checked==true){
+            //             snum[i] = document.all.nums[j].value;
+            //             snum_str+=snum[i]+",";
+            //             i++;
+            //         }else{
+            //             continue;
+            //         }	 
+            //     }   
+            //     if(snum.length<3){
+            //         alert('最少要選擇三個球!');
+            //         return ;
+            //     }
+            //     var term;
+            //     var balls;
+            //     var count = 0;
+            //     firebase.database().ref().once('value', function (snapshot) {
+            //         snapshot.forEach(function(item){
+            //             // console.log(item.key + " ");
+            //             firebase.database().ref(item.key).once('value', function (snapshot) {
+            //                 snapshot.forEach(function(item1){
+            //                     // console.log(item1.key + " " + item1.val());
+            //                     // switch(compare_to(type,tmpNums,snum)){
+                                    
+            //                     // }
+
+            //                     if(count == 0){
+            //                         term = item.key;
+            //                         balls = item1.val();
+            //                         count++;
+            //                         console.log("term: " + term);
+            //                         console.log("balls: " + balls);
+            //                     }
+            //                 })
+            //             });
+            //         })
+            //     });
+
+            //     console.log("term: " + term);
+            //     console.log("balls: " + balls);
+            //     // console.log(term.length);
+            //     // console.log(balls.length);
+
+            // //     for(var m=0;m<ball.length;m++){
+            // //         var tmpNums = ball[m][1].split(",");	  
+            // //         switch(compare_to(type,tmpNums,snum)){
+            // //             case 1:
+            // //                     award[0]++;
+            // //                     award_str[0]+=m+";";
+            // //                     break;
+            // //             case 2:
+            // //                     award[1]++;
+            // //                     award_str[1]+=m+";";
+            // //                     break;			   
+            // //             case 3:
+            // //                     award[2]++;
+            // //                     award_str[2]+=m+";";
+            // //                     break;			   
+            // //             case 4:
+            // //                     award[3]++;
+            // //                     award_str[3]+=m+";";
+            // //                     break;			   
+            // //             case 5:
+            // //                     award[4]++;
+            // //                     award_str[4]+=m+";";
+            // //                     break;			   
+            // //             case 6:
+            // //                     award[5]++;
+            // //                     award_str[5]+=m+";";
+            // //                     break;			   
+            // //             case 7:
+            // //                     award[6]++;
+            // //                     award_str[6]+=m+";";			   			   
+            // //                     break;			   
+            // //     }
+            // // }
+            // // //生成結果  
+            // // result_str.innerHTML = "<b>對比的結果：(共<b>"+ball.length+"</b>期)</b><hr>";
+            // result_str.innerHTML += "中<b><font color=003366>6</font></b>碼 <b><font color=red>"+term+"</font></b> 次";
+            // // result_str.innerHTML += "中<b><font color=003366>5</font></b>碼＋特別號 <b><font color=red>"+award[1]+"</font></b> 次　　<a href='javascript:' onClick=\"displyHistory("+type+",'"+award_str[1]+"','"+snum_str+"');\">〔顯示歷史開獎〕</a><br>";
+            // // result_str.innerHTML += "中<b><font color=003366>5</font></b>碼 <b><font color=red>"+award[2]+"</font></b> 次　　　　　　<a href='javascript:' onClick=\"displyHistory("+type+",'"+award_str[2]+"','"+snum_str+"');\">〔顯示歷史開獎〕</a><br>";
+            // // result_str.innerHTML += "中<b><font color=003366>4</font></b>碼＋特別號 <b><font color=red>"+award[3]+"</font></b> 次　　<a href='javascript:' onClick=\"displyHistory("+type+",'"+award_str[3]+"','"+snum_str+"');\">〔顯示歷史開獎〕</a><br>";
+            // // result_str.innerHTML += "中<b><font color=003366>4</font></b>碼 <b><font color=red>"+award[4]+"</font></b> 次　　　　　　<a href='javascript:' onClick=\"displyHistory("+type+",'"+award_str[4]+"','"+snum_str+"');\">〔顯示歷史開獎〕</a><br>";
+            // // result_str.innerHTML += "中<b><font color=003366>3</font></b>碼＋特別號 <b><font color=red>"+award[5]+"</font></b> 次　　<a href='javascript:' onClick=\"displyHistory("+type+",'"+award_str[5]+"','"+snum_str+"');\">〔顯示歷史開獎〕</a><br>";
+            // // result_str.innerHTML += "中<b><font color=003366>3</font></b>碼 <b><font color=red>"+award[6]+"</font></b> 次　　　　　 <a href='javascript:' onClick=\"displyHistory("+type+",'"+award_str[6]+"','"+snum_str+"');\">〔顯示歷史開獎〕</a><br>";    
+            // }
+        </script>
+	</head>
+
+    <body>
+        <h1>This is a Heading</h1>
+        <p>This is a paragraph.</p>
+        <td height="190">
+            <span id="cbox" style="font-size:13px; font-family:Arial, Helvetica, sans-serif ">
+                <hr>
+                <input id="num1" type="checkbox" name="nums" value="01" onclick="checkBox(this)">
+                <span>01</span> 
+                <input id="num2" type="checkbox" name="nums" value="02" onclick="checkBox(this)">
+                <span>02</span> 
+                <input id="num3" type="checkbox" name="nums" value="03" onclick="checkBox(this)">
+                <span>03</span> 
+                <input id="num4" type="checkbox" name="nums" value="04" onclick="checkBox(this)">
+                <span>04</span> 
+                <input id="num5" type="checkbox" name="nums" value="05" onclick="checkBox(this)">
+                <span>05</span> 
+                <input id="num6" type="checkbox" name="nums" value="06" onclick="checkBox(this)">
+                <span>06</span> 
+                <input id="num7" type="checkbox" name="nums" value="07" onclick="checkBox(this)">
+                <span>07</span>
+                <br>
+                <input id="num8" type="checkbox" name="nums" value="08" onclick="checkBox(this)">
+                <span>08</span> 
+                <input id="num9" type="checkbox" name="nums" value="09" onclick="checkBox(this)">
+                <span>09</span> 
+                <input id="num10" type="checkbox" name="nums" value="10" onclick="checkBox(this)">
+                <span>10</span> 
+                <input id="num11" type="checkbox" name="nums" value="11" onclick="checkBox(this)">
+                <span>11</span> 
+                <input id="num12" type="checkbox" name="nums" value="12" onclick="checkBox(this)">
+                <span>12</span> 
+                <input id="num13" type="checkbox" name="nums" value="13" onclick="checkBox(this)">
+                <span>13</span> 
+                <input id="num14" type="checkbox" name="nums" value="14" onclick="checkBox(this)">
+                <span>14</span>
+                <br>
+                <input id="num15" type="checkbox" name="nums" value="15" onclick="checkBox(this)">
+                <span>15</span> 
+                <input id="num16" type="checkbox" name="nums" value="16" onclick="checkBox(this)">
+                <span>16</span> 
+                <input id="num17" type="checkbox" name="nums" value="17" onclick="checkBox(this)">
+                <span>17</span> 
+                <input id="num18" type="checkbox" name="nums" value="18" onclick="checkBox(this)">
+                <span>18</span> 
+                <input id="num19" type="checkbox" name="nums" value="19" onclick="checkBox(this)">
+                <span>19</span> 
+                <input id="num20" type="checkbox" name="nums" value="20" onclick="checkBox(this)">
+                <span>20</span> 
+                <input id="num21" type="checkbox" name="nums" value="21" onclick="checkBox(this)">
+                <span>21</span>
+                <br>
+                <input id="num22" type="checkbox" name="nums" value="22" onclick="checkBox(this)">
+                <span>22</span> 
+                <input id="num23" type="checkbox" name="nums" value="23" onclick="checkBox(this)">
+                <span>23</span> 
+                <input id="num24" type="checkbox" name="nums" value="24" onclick="checkBox(this)">
+                <span>24</span> 
+                <input id="num25" type="checkbox" name="nums" value="25" onclick="checkBox(this)">
+                <span>25</span> 
+                <input id="num26" type="checkbox" name="nums" value="26" onclick="checkBox(this)">
+                <span>26</span> 
+                <input id="num27" type="checkbox" name="nums" value="27" onclick="checkBox(this)">
+                <span>27</span> 
+                <input id="num28" type="checkbox" name="nums" value="28" onclick="checkBox(this)">
+                <span>28</span>
+                <br>
+                <input id="num29" type="checkbox" name="nums" value="29" onclick="checkBox(this)">
+                <span>29</span> 
+                <input id="num30" type="checkbox" name="nums" value="30" onclick="checkBox(this)">
+                <span>30</span> 
+                <input id="num31" type="checkbox" name="nums" value="31" onclick="checkBox(this)">
+                <span>31</span> 
+                <input id="num32" type="checkbox" name="nums" value="32" onclick="checkBox(this)">
+                <span>32</span> 
+                <input id="num33" type="checkbox" name="nums" value="33" onclick="checkBox(this)">
+                <span>33</span> 
+                <input id="num34" type="checkbox" name="nums" value="34" onclick="checkBox(this)">
+                <span>34</span> 
+                <input id="num35" type="checkbox" name="nums" value="35" onclick="checkBox(this)">
+                <span>35</span>
+                <br>
+                <input id="num36" type="checkbox" name="nums" value="36" onclick="checkBox(this)">
+                <span>36</span> 
+                <input id="num37" type="checkbox" name="nums" value="37" onclick="checkBox(this)">
+                <span>37</span> 
+                <input id="num38" type="checkbox" name="nums" value="38" onclick="checkBox(this)">
+                <span>38</span> 
+                <input id="num39" type="checkbox" name="nums" value="39" onclick="checkBox(this)">
+                <span>39</span> 
+                <input id="num40" type="checkbox" name="nums" value="40" onclick="checkBox(this)">
+                <span>40</span> 
+                <input id="num41" type="checkbox" name="nums" value="41" onclick="checkBox(this)">
+                <span>41</span> 
+                <input id="num42" type="checkbox" name="nums" value="42" onclick="checkBox(this)">
+                <span>42</span>
+                <br>
+                <input id="num43" type="checkbox" name="nums" value="43" onclick="checkBox(this)">
+                <span>43</span> 
+                <input id="num44" type="checkbox" name="nums" value="44" onclick="checkBox(this)">
+                <span>44</span> 
+                <input id="num45" type="checkbox" name="nums" value="45" onclick="checkBox(this)">
+                <span>45</span> 
+                <input id="num46" type="checkbox" name="nums" value="46" onclick="checkBox(this)">
+                <span>46</span> 
+                <input id="num47" type="checkbox" name="nums" value="47" onclick="checkBox(this)">
+                <span>47</span> 
+                <input id="num48" type="checkbox" name="nums" value="48" onclick="checkBox(this)">
+                <span>48</span> 
+                <input id="num49" type="checkbox" name="nums" value="49" onclick="checkBox(this)">
+                <span>49</span>
+                <br>
+            </span>
+        </td>
+        <tr>
+            <td height="25">&nbsp;chosen ball</td>
+        </tr>
+        <tr>
+            <td height="30" valign="middle" style="border:1px double #BAD3FC">&nbsp;
+                <span id="num_input">
+
+                </span>
+            </td>
+        </tr>
+        <!-- <br>
+        <input type="file" name="inputfile"
+            id="inputfile" onclick="choosefile(this)">
+        <br>
+    
+        <pre id="output"></pre> -->
+        <br>
+        <input type="button" name="bt" value="start compare" onclick="return startCompare(1);">
+        <br>
+        <td>
+            <span id="result_str" style="font-size:14px; line-height:23px">
+                <b>
+                    result
+                    <b>1988</b>
+                </b>
+                <hr>
+                <b>
+                    <font color="003366">6</font>
+                </b>
+                <b>
+                    <font color="red">0</font>
+                </b>
+            </span></td>
+        
+    </body>
+</html>
